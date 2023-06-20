@@ -1,27 +1,32 @@
-import { ethers } from "hardhat";
+import { Overrides } from 'ethers';
+import { ethers } from 'hardhat';
 
-async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+async function deploy() {
+  // コントラクトをデプロイするアカウントのアドレスを取得します。
+  const [deployer] = await ethers.getSigners();
+  console.log('Deploying contract with the account:', deployer.address);
 
-  const lockedAmount = ethers.parseEther("0.001");
+  const funds = 100;
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  // コントラクトのインスタンスを作成します。
 
-  await lock.waitForDeployment();
+  // The deployed instance of the contract
+  const messenger = await ethers.deployContract("Messenger",{
+    value: funds,
+  } as Overrides);
 
+  await messenger.waitForDeployment();
+
+  console.log('Contract deployed at:',await messenger.getAddress());
   console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
+    "Contract's fund is:",
+    await await messenger.getAddress()
   );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+deploy()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

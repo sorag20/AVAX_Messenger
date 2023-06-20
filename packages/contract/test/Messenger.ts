@@ -11,7 +11,7 @@ describe('Messenger', function () {
     const funds = 100;
 
     const Messenger = await hre.ethers.getContractFactory('Messenger');
-    const messenger = await Messenger.deploy({
+    const messenger = await Messenger.deployContract({
       value: funds,
     } as Overrides);
 
